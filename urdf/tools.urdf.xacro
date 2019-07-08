@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot name="macroed" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <material name="green">
+    <color rgba="0 0.5 0 1"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <material name="grey">
+    <color rgba="0.5 0.5 0.5 1"/>
+  </material>
+
+  <xacro:macro name='tool_part_link' params="name obj_file color">
+    <link name="${name}_link">
+      <visual>
+        <geometry>
+          <mesh filename="${obj_file}"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name='fixed_joint' params="name parent_f child_f *origin">
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent_f}"/>
+      <child link="${child_f}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+  </xacro:macro>
+  <xacro:macro name='revolute_joint' params="name parent_f child_f *axis *limit">
+    <joint name="${name}_joint" type="revolute">
+      <parent link="${parent_f}"/>
+      <child link="${child_f}"/>
+      <xacro:insert_block name="axis"/>
+      <xacro:insert_block name="limit"/>
+    </joint>
+  </xacro:macro>
+  <xacro:macro name='prismatic_joint' params="name parent_f child_f *axis *limit">
+    <joint name="${name}_joint" type="prismatic">
+      <parent link="${parent_f}"/>
+      <child link="${child_f}"/>
+      <xacro:insert_block name="axis"/>
+      <xacro:insert_block name="limit"/>
+    </joint>
+  </xacro:macro>
+
+  <link name="base_link"/>
+  <link name="pliers_link" />
+
+  <xacro:tool_part_link name="left_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_left.dae" color="white" />
+  <xacro:tool_part_link name="right_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_right.dae" color="white" />
+  <xacro:tool_part_link name="clamp" obj_file="file://$(find tool_meshes)/meshes/clamp_body.dae" color="grey" />
+  <xacro:tool_part_link name="clamp_handle" obj_file="file://$(find tool_meshes)/meshes/clamp_handle.dae" color="green" />
+
+  <xacro:fixed_joint name="pliers" parent_f="base_link" child_f="pliers_link">
+    <origin xyz="1 1 0"/>
+  </xacro:fixed_joint>
+  <xacro:fixed_joint name="clamp" parent_f="base_link" child_f="clamp_link">
+    <origin xyz="1 0 0"/>
+  </xacro:fixed_joint>
+  <xacro:revolute_joint name="left_pliers" parent_f="pliers_link" child_f="left_pliers_link">
+    <axis xyz="0 0 1" />
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+  </xacro:revolute_joint>
+  <xacro:revolute_joint name="right_pliers" parent_f="pliers_link" child_f="right_pliers_link">
+    <axis xyz="0 0 -1" />
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+  </xacro:revolute_joint>
+  <xacro:prismatic_joint name="clamp_handle" parent_f="clamp_link" child_f="clamp_handle_link">
+    <axis xyz="1 0 0" />
+    <limit effort="1000.0" lower="0.1" upper="0.30" velocity="0.5"/>
+  </xacro:prismatic_joint>
+    
+
+</robot>
