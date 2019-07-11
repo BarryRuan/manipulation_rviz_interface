@@ -13,6 +13,15 @@
     <color rgba="0.5 0.5 0.5 1"/>
   </material>
 
+  <xacro:arg name="with_pliers" default="true" />
+  <xacro:arg name="with_clamp" default="true" />
+  <xacro:arg name="with_tape" default="true" />
+  <xacro:arg name="with_knife" default="true" />
+  <xacro:arg name="with_hamer" default="true" />
+  <xacro:arg name="with_haxegon_screwdriver" default="true" />
+  <xacro:arg name="with_yellow_screwdriver" default="true" />
+  <xacro:arg name="with_flashlight" default="true" />
+
   <xacro:macro name='tool_part_link' params="name obj_file color">
     <link name="${name}_link">
       <visual>
@@ -23,57 +32,123 @@
       </visual>
     </link>
   </xacro:macro>
-
   <xacro:macro name='fixed_joint' params="name parent_f child_f *origin">
     <joint name="${name}_joint" type="fixed">
-      <parent link="${parent_f}"/>
-      <child link="${child_f}"/>
+      <parent link="${parent_f}_link"/>
+      <child link="${child_f}_link"/>
       <xacro:insert_block name="origin"/>
     </joint>
   </xacro:macro>
   <xacro:macro name='revolute_joint' params="name parent_f child_f *axis *limit">
     <joint name="${name}_joint" type="revolute">
-      <parent link="${parent_f}"/>
-      <child link="${child_f}"/>
+      <parent link="${parent_f}_link"/>
+      <child link="${child_f}_link"/>
       <xacro:insert_block name="axis"/>
       <xacro:insert_block name="limit"/>
     </joint>
   </xacro:macro>
   <xacro:macro name='prismatic_joint' params="name parent_f child_f *axis *limit">
     <joint name="${name}_joint" type="prismatic">
-      <parent link="${parent_f}"/>
-      <child link="${child_f}"/>
+      <parent link="${parent_f}_link"/>
+      <child link="${child_f}_link"/>
       <xacro:insert_block name="axis"/>
       <xacro:insert_block name="limit"/>
     </joint>
   </xacro:macro>
+  <xacro:macro name='single_tool_link' params="name obj_file color *origin">
+    <link name="${name}_link">
+      <visual>
+        <geometry>
+          <mesh filename="${obj_file}"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}_link"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+  </xacro:macro>
 
+  <!--global frame-->
   <link name="base_link"/>
-  <link name="pliers_link" />
 
-  <xacro:tool_part_link name="left_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_left.dae" color="white" />
-  <xacro:tool_part_link name="right_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_right.dae" color="white" />
-  <xacro:tool_part_link name="clamp" obj_file="file://$(find tool_meshes)/meshes/clamp_body.dae" color="grey" />
-  <xacro:tool_part_link name="clamp_handle" obj_file="file://$(find tool_meshes)/meshes/clamp_handle.dae" color="green" />
+  <!--pliers description-->
+  <xacro:if value="$(arg with_pliers)">
+    <xacro:tool_part_link name="left_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_left.dae" color="white" />
+    <xacro:tool_part_link name="right_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_right.dae" color="white" />
+    <xacro:fixed_joint name="pliers" parent_f="base" child_f="left_pliers">
+      <origin xyz="1 1 0"/>
+    </xacro:fixed_joint>
+    <xacro:revolute_joint name="right_pliers" parent_f="left_pliers" child_f="right_pliers">
+      <axis xyz="0 0 -1" />
+      <limit effort="1000.0" lower="0.0" upper="0.785" velocity="0.5"/>
+    </xacro:revolute_joint>
+  </xacro:if>
 
-  <xacro:fixed_joint name="pliers" parent_f="base_link" child_f="pliers_link">
-    <origin xyz="1 1 0"/>
-  </xacro:fixed_joint>
-  <xacro:fixed_joint name="clamp" parent_f="base_link" child_f="clamp_link">
-    <origin xyz="1 0 0"/>
-  </xacro:fixed_joint>
-  <xacro:revolute_joint name="left_pliers" parent_f="pliers_link" child_f="left_pliers_link">
-    <axis xyz="0 0 1" />
-    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
-  </xacro:revolute_joint>
-  <xacro:revolute_joint name="right_pliers" parent_f="pliers_link" child_f="right_pliers_link">
-    <axis xyz="0 0 -1" />
-    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
-  </xacro:revolute_joint>
-  <xacro:prismatic_joint name="clamp_handle" parent_f="clamp_link" child_f="clamp_handle_link">
-    <axis xyz="1 0 0" />
-    <limit effort="1000.0" lower="0.1" upper="0.30" velocity="0.5"/>
-  </xacro:prismatic_joint>
+  <!--clamp description-->
+  <xacro:if value="$(arg with_clamp)">
+    <xacro:tool_part_link name="clamp" obj_file="file://$(find tool_meshes)/meshes/clamp_body.dae" color="grey" />
+    <xacro:tool_part_link name="clamp_handle" obj_file="file://$(find tool_meshes)/meshes/clamp_handle.dae" color="green" />
+    <xacro:fixed_joint name="clamp" parent_f="base" child_f="clamp">
+      <origin xyz="1 0 0"/>
+    </xacro:fixed_joint>
+    <xacro:prismatic_joint name="clamp_handle" parent_f="clamp" child_f="clamp_handle">
+      <axis xyz="1 0 0" />
+      <limit effort="1000.0" lower="0.1" upper="0.30" velocity="0.5"/>
+    </xacro:prismatic_joint>
+  </xacro:if>
+
+  <!-- flashlight description-->
+  <xacro:if value="$(arg with_flashlight)">
+    <xacro:tool_part_link name="flashlight" obj_file="file://$(find tool_meshes)/meshes/flashlight_body.dae" color="grey" />
+    <xacro:tool_part_link name="flashlight_stand" obj_file="file://$(find tool_meshes)/meshes/flashlight_stand.dae" color="green" />
+    <xacro:fixed_joint name="flashlight" parent_f="base" child_f="flashlight">
+      <origin xyz="1 -1 0"/>
+    </xacro:fixed_joint>
+    <xacro:revolute_joint name="flashlight_stand" parent_f="flashlight" child_f="flashlight_stand">
+      <axis xyz="1 0 0" />
+      <limit effort="1000.0" lower="-2.7" upper="2.7" velocity="0.5"/>
+    </xacro:revolute_joint>
+  </xacro:if>
+
+  <!-- tape description-->
+  <xacro:if value="$(arg with_tape)">
+    <xacro:single_tool_link name="tape" obj_file="file://$(find tool_meshes)/meshes/tape.dae" color="grey" >
+      <origin xyz="1 -2 0"/>
+    </xacro:single_tool_link>
+  </xacro:if>
     
+  <!-- hamer description-->
+  <xacro:if value="$(arg with_hamer)">
+    <xacro:single_tool_link name="hamer_head" obj_file="file://$(find tool_meshes)/meshes/hamer_head.dae" color="grey" >
+      <origin xyz="2 -2 0"/>
+    </xacro:single_tool_link>
+    <xacro:single_tool_link name="hamer_handle" obj_file="file://$(find tool_meshes)/meshes/hamer_handle.dae" color="grey" >
+      <origin xyz="2 -1 0"/>
+    </xacro:single_tool_link>
+  </xacro:if>
+
+  <!-- knife description-->
+  <xacro:if value="$(arg with_knife)">
+    <xacro:single_tool_link name="knife" obj_file="file://$(find tool_meshes)/meshes/knife.dae" color="grey" >
+      <origin xyz="2 0 0"/>
+    </xacro:single_tool_link>
+  </xacro:if>
+
+  <!-- haxegon_screwdriver description-->
+  <xacro:if value="$(arg with_haxegon_screwdriver)">
+    <xacro:single_tool_link name="haxegon_screwdriver" obj_file="file://$(find tool_meshes)/meshes/haxegon_screwdriver.dae" color="grey" >
+      <origin xyz="2 1 0"/>
+    </xacro:single_tool_link>
+  </xacro:if>
+
+  <!-- yellow_screwdriver description-->
+  <xacro:if value="$(arg with_yellow_screwdriver)">
+    <xacro:single_tool_link name="yellow_screwdriver" obj_file="file://$(find tool_meshes)/meshes/yellow_screwdriver.dae" color="grey" >
+      <origin xyz="1 2 0"/>
+    </xacro:single_tool_link>
+  </xacro:if>
 
 </robot>

@@ -6,8 +6,18 @@ from interactive_markers.interactive_marker_server import *
 from visualization_msgs.msg import *
 from geometry_msgs.msg import Point
 import tf
+import sys
 
 server = None
+
+tool_list = [{'names':['clamp'], 'links':['clamp_link'], 'positions':[Point(1,0,0)]},
+        {'names':['pliers'], 'links':['left_pliers_link'], 'positions':[Point(1,1,0)]}, 
+        {'names':['haxegon_screwdriver'], 'links':['haxegon_screwdriver_link'], 'positions':[Point(2,1,0)]}, 
+        {'names':['yellow_screwdriver'], 'links':['yellow_screwdriver_link'], 'positions':[Point(1,2,0)]}, 
+        {'names':['tape'], 'links':['tape_link'], 'positions':[Point(1,-2,0)]}, 
+        {'names':['knife'], 'links':['knife_link'], 'positions':[Point(2,0,0)]}, 
+        {'names':['hamer_head', 'hamer_handle'], 'links':['hamer_head_link', 'hamer_handle_link'], 'positions':[Point(2,-2,0), Point(2,-1,0)]}, 
+        {'names':['flashlight'], 'links':['flashlight_link'], 'positions':[Point(1,-1,0)]}]
 
 class toolInteractiveMarker:
     def __init__(self, frame_id, name, frame_origin):
@@ -128,11 +138,14 @@ if __name__=="__main__":
 
     server = InteractiveMarkerServer("tools_controls")
 
-    position = Point(1,1,0)
-    plier_marker = toolInteractiveMarker("pliers_link", "pliers", position)
-
-    position = Point(1,0,0)
-    plier_marker = toolInteractiveMarker("clamp_link", "clamp", position)
+    tool_markers = []
+    for i in range(1, len(sys.argv)):
+        if (sys.argv[i]) == 'true':
+            for j in range(len(tool_list[i-1]['names'])):
+                position = tool_list[i-1]['positions'][j]
+                name = tool_list[i-1]['names'][j]
+                link_name = tool_list[i-1]['links'][j]
+                tool_markers.append(toolInteractiveMarker(link_name, name, position))
 
     server.applyChanges()
 
