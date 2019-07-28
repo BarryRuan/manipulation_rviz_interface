@@ -1,13 +1,13 @@
 <launch>
   <arg name="model" default="$(find tool_meshes)/urdf/tools.urdf.xacro"/>
-  <arg name="with_pliers" default="false"/>
-  <arg name="with_clamp" default="false"/>
-  <arg name="with_tape" default="false"/>
-  <arg name="with_knife" default="false"/>
-  <arg name="with_hamer" default="false"/>
-  <arg name="with_haxegon_screwdriver" default="false"/>
-  <arg name="with_yellow_screwdriver" default="false"/>
-  <arg name="with_flashlight" default="false"/>
+  <arg name="with_pliers" default="true"/>
+  <arg name="with_clamp" default="true"/>
+  <arg name="with_tape" default="true"/>
+  <arg name="with_knife" default="true"/>
+  <arg name="with_hamer" default="true"/>
+  <arg name="with_haxegon_screwdriver" default="true"/>
+  <arg name="with_yellow_screwdriver" default="true"/>
+  <arg name="with_flashlight" default="true"/>
   <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find tool_meshes)/rviz/urdf.rviz" />
 
@@ -35,7 +35,6 @@
   args="$(arg with_clamp) $(arg with_pliers) $(arg with_haxegon_screwdriver)
     $(arg with_yellow_screwdriver) $(arg with_tape) $(arg with_knife)
     $(arg with_hamer) $(arg with_flashlight)" output="screen" />
-  <node name="action_server" pkg="tool_meshes" type="tool_action_server.py" output="screen" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
 </launch>

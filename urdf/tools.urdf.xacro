@@ -136,7 +136,7 @@
       <origin xyz="1 -2 0"/>
     </xacro:single_tool_link>
     <xacro:pickup_joint name="tape" parent_f="tape">
-      <origin xyz="0.02 0 0"/>
+      <origin xyz="0.03 0 0"/>
     </xacro:pickup_joint>
   </xacro:if>
     
