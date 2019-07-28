@@ -1,0 +1,23 @@
+1. define pick up and place function for each tool including:
+  a.picking up:
+    pre-pick normal, pre-pick pose in base_link
+    pick-up point in base_link
+
+  b.moving:
+    current pose with reverse orientation
+
+  c. placing:
+    pre-place normal(reverse orientation), pre-place pose in base_link
+
+2. tool action server: 
+  a. msg type:
+    tool_name, tool_pose in odom 
+
+  b. steps:
+    transform tool_pose in odom to tool_pose in robot base_link
+    adding pick-up point and reverse orientation
+
+  c. send action to server
+
+3. how to get tool_pose:
+  lookup transform from tool_pose to odom

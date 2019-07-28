@@ -1,0 +1,26 @@
+<launch>
+  <arg name="model" default="$(find tool_meshes)/urdf/tools.urdf.xacro"/>
+  <arg name="with_pliers" default="true"/>
+  <arg name="with_clamp" default="true"/>
+  <arg name="with_tape" default="true"/>
+  <arg name="with_knife" default="true"/>
+  <arg name="with_hamer" default="true"/>
+  <arg name="with_haxegon_screwdriver" default="true"/>
+  <arg name="with_yellow_screwdriver" default="true"/>
+  <arg name="with_flashlight" default="true"/>
+  <arg name="gui" default="true" />
+  <arg name="rvizconfig" default="$(find tool_meshes)/rviz/urdf.rviz" />
+
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model) 
+    with_clamp:=$(arg with_clamp) with_pliers:=$(arg with_pliers) 
+    with_haxegon_screwdriver:=$(arg with_haxegon_screwdriver)
+    with_yellow_screwdriver:=$(arg with_yellow_screwdriver) 
+    with_tape:=$(arg with_tape) with_knife:=$(arg with_knife)
+    with_hamer:=$(arg with_hamer) with_flashlight:=$(arg with_flashlight)" />
+  <param name="use_gui" value="$(arg gui)"/>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+</launch>

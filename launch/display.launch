@@ -1,17 +1,17 @@
 <launch>
   <arg name="model" default="$(find tool_meshes)/urdf/tools.urdf.xacro"/>
-  <arg name="with_pliers" default="true"/>
-  <arg name="with_clamp" default="true"/>
-  <arg name="with_tape" default="true"/>
-  <arg name="with_knife" default="true"/>
-  <arg name="with_hamer" default="true"/>
-  <arg name="with_haxegon_screwdriver" default="true"/>
-  <arg name="with_yellow_screwdriver" default="true"/>
-  <arg name="with_flashlight" default="true"/>
+  <arg name="with_pliers" default="false"/>
+  <arg name="with_clamp" default="false"/>
+  <arg name="with_tape" default="false"/>
+  <arg name="with_knife" default="false"/>
+  <arg name="with_hamer" default="false"/>
+  <arg name="with_haxegon_screwdriver" default="false"/>
+  <arg name="with_yellow_screwdriver" default="false"/>
+  <arg name="with_flashlight" default="false"/>
   <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find tool_meshes)/rviz/urdf.rviz" />
 
-  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model) 
+  <param name="tool_description" command="$(find xacro)/xacro.py $(arg model) 
     with_clamp:=$(arg with_clamp) with_pliers:=$(arg with_pliers) 
     with_haxegon_screwdriver:=$(arg with_haxegon_screwdriver)
     with_yellow_screwdriver:=$(arg with_yellow_screwdriver) 
@@ -19,12 +19,23 @@
     with_hamer:=$(arg with_hamer) with_flashlight:=$(arg with_flashlight)" />
   <param name="use_gui" value="$(arg gui)"/>
 
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+  <node name="tool_base_to_robot_base" pkg="tf" type="static_transform_publisher" 
+    args="0 0 0 0 0 0 1 odom tool/base_link 100"/>
+  <node name="tool_joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+    <remap from="robot_description" to="tool_description" />
+    <remap from="/joint_states" to="/tool_joint_states" />
+  </node>
+  <node name="tool_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" >
+    <remap from="robot_description" to="tool_description" />
+    <remap from="/joint_states" to="/tool_joint_states" />
+    <param name="tf_prefix" value="tool" />
+  </node>
   <node name="interactive_marker" pkg="tool_meshes" type="interactive.py" 
   args="$(arg with_clamp) $(arg with_pliers) $(arg with_haxegon_screwdriver)
     $(arg with_yellow_screwdriver) $(arg with_tape) $(arg with_knife)
-    $(arg with_hamer) $(arg with_flashlight)" />
+    $(arg with_hamer) $(arg with_flashlight)" output="screen" />
+  <node name="action_server" pkg="tool_meshes" type="tool_action_server.py" output="screen" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
 </launch>

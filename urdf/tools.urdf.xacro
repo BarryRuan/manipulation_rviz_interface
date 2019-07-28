@@ -32,6 +32,14 @@
       </visual>
     </link>
   </xacro:macro>
+  <xacro:macro name='pickup_joint' params="name parent_f *origin">
+    <link name="${name}_pickup_link" />
+    <joint name="${name}_pick_up_joint" type="fixed">
+      <parent link="${parent_f}_link"/>
+      <child link="${name}_pickup_link"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+  </xacro:macro>
   <xacro:macro name='fixed_joint' params="name parent_f child_f *origin">
     <joint name="${name}_joint" type="fixed">
       <parent link="${parent_f}_link"/>
@@ -78,6 +86,9 @@
   <xacro:if value="$(arg with_pliers)">
     <xacro:tool_part_link name="left_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_left.dae" color="white" />
     <xacro:tool_part_link name="right_pliers" obj_file="file://$(find tool_meshes)/meshes/pliers_right.dae" color="white" />
+    <xacro:pickup_joint name="pliers" parent_f="left_pliers">
+      <origin xyz="-0.025 0.10 0"/>
+    </xacro:pickup_joint>
     <xacro:fixed_joint name="pliers" parent_f="base" child_f="left_pliers">
       <origin xyz="1 1 0"/>
     </xacro:fixed_joint>
@@ -91,6 +102,9 @@
   <xacro:if value="$(arg with_clamp)">
     <xacro:tool_part_link name="clamp" obj_file="file://$(find tool_meshes)/meshes/clamp_body.dae" color="grey" />
     <xacro:tool_part_link name="clamp_handle" obj_file="file://$(find tool_meshes)/meshes/clamp_handle.dae" color="green" />
+    <xacro:pickup_joint name="clamp" parent_f="clamp">
+      <origin xyz="0.1 0 0"/>
+    </xacro:pickup_joint>
     <xacro:fixed_joint name="clamp" parent_f="base" child_f="clamp">
       <origin xyz="1 0 0"/>
     </xacro:fixed_joint>
@@ -104,6 +118,9 @@
   <xacro:if value="$(arg with_flashlight)">
     <xacro:tool_part_link name="flashlight" obj_file="file://$(find tool_meshes)/meshes/flashlight_body.dae" color="grey" />
     <xacro:tool_part_link name="flashlight_stand" obj_file="file://$(find tool_meshes)/meshes/flashlight_stand.dae" color="green" />
+    <xacro:pickup_joint name="flashlight" parent_f="flashlight">
+      <origin xyz="0 0 0.03"/>
+    </xacro:pickup_joint>
     <xacro:fixed_joint name="flashlight" parent_f="base" child_f="flashlight">
       <origin xyz="1 -1 0"/>
     </xacro:fixed_joint>
@@ -118,6 +135,9 @@
     <xacro:single_tool_link name="tape" obj_file="file://$(find tool_meshes)/meshes/tape.dae" color="grey" >
       <origin xyz="1 -2 0"/>
     </xacro:single_tool_link>
+    <xacro:pickup_joint name="tape" parent_f="tape">
+      <origin xyz="0.02 0 0"/>
+    </xacro:pickup_joint>
   </xacro:if>
     
   <!-- hamer description-->
@@ -128,6 +148,9 @@
     <xacro:single_tool_link name="hamer_handle" obj_file="file://$(find tool_meshes)/meshes/hamer_handle.dae" color="grey" >
       <origin xyz="2 -1 0"/>
     </xacro:single_tool_link>
+    <xacro:pickup_joint name="hamer" parent_f="hamer_handle">
+      <origin xyz="0 -0.04 0"/>
+    </xacro:pickup_joint>
   </xacro:if>
 
   <!-- knife description-->
@@ -135,6 +158,9 @@
     <xacro:single_tool_link name="knife" obj_file="file://$(find tool_meshes)/meshes/knife.dae" color="grey" >
       <origin xyz="2 0 0"/>
     </xacro:single_tool_link>
+    <xacro:pickup_joint name="knife" parent_f="knife">
+      <origin xyz="0.02 -0.01 0"/>
+    </xacro:pickup_joint>
   </xacro:if>
 
   <!-- haxegon_screwdriver description-->
@@ -142,6 +168,9 @@
     <xacro:single_tool_link name="haxegon_screwdriver" obj_file="file://$(find tool_meshes)/meshes/haxegon_screwdriver.dae" color="grey" >
       <origin xyz="2 1 0"/>
     </xacro:single_tool_link>
+    <xacro:pickup_joint name="haxegon_screwdriver" parent_f="haxegon_screwdriver">
+      <origin xyz="0 0 0.005"/>
+    </xacro:pickup_joint>
   </xacro:if>
 
   <!-- yellow_screwdriver description-->
@@ -149,6 +178,9 @@
     <xacro:single_tool_link name="yellow_screwdriver" obj_file="file://$(find tool_meshes)/meshes/yellow_screwdriver.dae" color="grey" >
       <origin xyz="1 2 0"/>
     </xacro:single_tool_link>
+    <xacro:pickup_joint name="yellow_screwdriver" parent_f="yellow_screwdriver">
+      <origin xyz="0 0 0.035"/>
+    </xacro:pickup_joint>
   </xacro:if>
 
 </robot>
